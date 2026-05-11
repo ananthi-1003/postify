@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <div style="max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-    <h2>Signup</h2>
+    <h2>Create Account</h2>
     
     {% if form.errors %}
         <div style="color: red; background: #ffe6e6; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
@@ -21,10 +21,10 @@
         <label>Confirm Password:</label><br>
         {{ form.password2 }}<br><br>
         
-        <button type="submit" style="width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 5px; font-size: 16px;">Create Account</button>
+        <button type="submit" style="width: 100%; padding: 12px; background: #28a745; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">Create Account</button>
     </form>
     <br>
-    <p style="text-align: center;">Already account iruka? <a href="{% url 'login' %}">Login pannu</a></p>
+    <p style="text-align: center;">Already have an account? <a href="{% url 'login' %}">Login</a></p>
 </div>
 
 <style>
@@ -38,6 +38,8 @@ input[type="text"], input[type="password"] {
 .helptext, ul {
     font-size: 12px;
     color: #666;
+    margin-top: -10px;
+    margin-bottom: 15px;
 }
 </style>
 {% endblock %}

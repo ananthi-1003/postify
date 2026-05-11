@@ -4,7 +4,7 @@
     <h2>Login</h2>
     
     {% if form.errors %}
-        <p style="color: red; background: #ffe6e6; padding: 10px; border-radius: 5px;">Username or Password thappu da.</p>
+        <p style="color: red; background: #ffe6e6; padding: 10px; border-radius: 5px;">Your username or password is incorrect. Please try again.</p>
     {% endif %}
 
     <form method="POST" action="{% url 'login' %}">
@@ -16,9 +16,9 @@
         <label>Password:</label><br>
         <input type="password" name="password" required style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px;"><br>
         
-        <button type="submit" style="width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 5px; font-size: 16px;">Login</button>
+        <button type="submit" style="width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">Login</button>
     </form>
     <br>
-    <p style="text-align: center;">Account illa? <a href="{% url 'signup' %}">Signup pannu</a></p>
+    <p style="text-align: center;">Don't have an account? <a href="{% url 'signup' %}">Sign up</a></p>
 </div>
 {% endblock %}
