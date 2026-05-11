@@ -1,16 +1,28 @@
 {% extends 'base.html' %}
 {% block content %}
 <h1>Postify Feed</h1>
+
+<div class="create-post">
+    <form method="POST" action="{% url 'create-post' %}">
+        {% csrf_token %}
+        <textarea name="content" placeholder="What's on your mind?" rows="3" required style="width: 100%;"></textarea>
+        <br><br>
+        <button type="submit">Post</button>
+    </form>
+</div>
+<hr>
+
 {% for post in posts %}
     <div class="post">
         <b>{{ post.user.username }}</b> - {{ post.created_at|date:"d M Y H:i" }}
         <p>{{ post.text }}</p>
         {% if post.image %}
-            <img src="{{ post.image.url }}">
+            <img src="{{ post.image.url }}" width="300">
         {% endif %}
         <br>
-        <a href="/like/{{ post.id }}/">❤️ Like</a> {{ post.like_set.count }}
+        <a href="#">❤️ Like</a>
     </div>
+    <hr>
 {% empty %}
     <p>No posts yet. Create one!</p>
 {% endfor %}

@@ -6,10 +6,8 @@ urlpatterns = [
     path('', views.feed, name='feed'),
     path('profile/', views.profile, name='profile'),
     path('friends/', views.friends, name='friends'),
-    
-    
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('logout/', views.logout_view, name='logout'),
     path('signup/', views.signup, name='signup'),
     path('edit-profile/', views.edit_profile, name='edit-profile'),
     path('create-post/', views.create_post, name='create-post'),
