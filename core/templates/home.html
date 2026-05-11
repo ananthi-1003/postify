@@ -1,62 +1,82 @@
 {% extends 'base.html' %}
 {% block content %}
-<style>
-    body.theme-dark { background: #0f172a; color: #e2e8f0; }
-    body.theme-light { background: #f8fafc; color: #0f172a; }
-    body.theme-purple { background: #2e1065; color: #f3e8ff; }
-    .container { max-width: 600px; margin: 20px auto; padding: 0 15px; }
-    .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
-    .btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; margin: 5px; background: #334155; color: white; }
-    textarea, input[type=text] { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #475569; background: #1e293b; color: white; }
-</style>
-
 <div class="container">
-    <!-- Theme Selector -->
-    <form method="POST" action="{% url 'change_theme' %}">
-        {% csrf_token %}
-        <select name="theme" onchange="this.form.submit()" class="btn">
-            <option value="dark" {% if request.user.profile.theme == 'dark' %}selected{% endif %}>🌙 Dark</option>
-            <option value="light" {% if request.user.profile.theme == 'light' %}selected{% endif %}>☀️ Light</option>
-            <option value="purple" {% if request.user.profile.theme == 'purple' %}selected{% endif %}>💜 Purple</option>
-        </select>
-    </form>
-
     <!-- Create Post -->
-    <div class="card">
+    <div class="post" style="border-bottom: 1px solid #4c1d95;">
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.content }}
-            <div style="margin-top: 10px;">{{ form.image }}</div>
-            <button type="submit" class="btn" style="background: #7c3aed; margin-top: 10px;">Post</button>
+            <div style="margin-top: 12px;">{{ form.image }}</div>
+            <button type="submit" class="btn" style="width: auto; float: right; margin-top: 12px;">Post</button>
+            <div style="clear: both;"></div>
         </form>
     </div>
 
     <!-- Posts Feed -->
     {% for post in posts %}
-    <div class="card" id="post-{{ post.id }}">
-        <h3>{{ post.user.username }}</h3>
-        <p style="margin: 10px 0;">{{ post.content }}</p>
-        {% if post.image %}<img src="{{ post.image.url }}" style="max-width: 100%; border-radius: 12px;">{% endif %}
-        <p style="font-size: 12px; opacity: 0.7;">{{ post.created_at|date:"M d, Y" }}</p>
+    <div class="post">
+        <!-- Post Header -->
+        <div class="post-header">
+            <span class="post-user">@{{ post.user.username }}</span>
+            <span class="post-time">· {{ post.created_at|timesince }} ago</span>
+        </div>
         
-        <div style="margin-top: 15px;">
-            <button onclick="likePost({{ post.id }})" class="btn">❤️ <span id="likes-{{ post.id }}">{{ post.total_likes }}</span></button>
-            <button onclick="savePost({{ post.id }})" class="btn">🔖 <span id="saves-{{ post.id }}">{{ post.total_saves }}</span></button>
-            <a href="{% url 'repost' post.id %}" class="btn">🔄 Repost</a>
-            <button onclick="sharePost({{ post.id }})" class="btn">📤 Share</button>
+        <!-- Post Content -->
+        <div class="post-content">{{ post.content }}</div>
+        {% if post.image %}
+            <img src="{{ post.image.url }}" class="post-image">
+        {% endif %}
+        
+        <!-- Action Buttons: Comment, Repost, Like, Save, Share -->
+        <div class="post-actions">
+            <!-- 1. Comment -->
+            <button class="action-btn" onclick="toggleComment({{ post.id }})">
+                💬 {{ post.comments.count }}
+            </button>
+            
+            <!-- 2. Repost -->
+            <a href="{% url 'repost' post.id %}" class="action-btn">
+                🔄 {{ post.reposts.count }}
+            </a>
+            
+            <!-- 3. Like -->
+            <button class="action-btn {% if request.user in post.likes.all %}liked{% endif %}" onclick="likePost({{ post.id }})">
+                {% if request.user in post.likes.all %} ❤️ {% else %} 🤍 {% endif %}
+                <span id="likes-{{ post.id }}">{{ post.total_likes }}</span>
+            </button>
+            
+            <!-- 4. Save -->
+            <button class="action-btn {% if request.user in post.saves.all %}saved{% endif %}" onclick="savePost({{ post.id }})">
+                {% if request.user in post.saves.all %} 🔖 {% else %} 📑 {% endif %}
+                <span id="saves-{{ post.id }}">{{ post.total_saves }}</span>
+            </button>
+            
+            <!-- 5. Share -->
+            <button class="action-btn" onclick="sharePost({{ post.id }})">
+                📤
+            </button>
         </div>
 
-        <!-- Comments -->
-        <div style="margin-top: 15px;">
-            <form method="POST" action="{% url 'comment_post' post.id %}">
+        <!-- Comments Section -->
+        <div class="comment-box" id="comment-box-{{ post.id }}" style="display: none;">
+            <form method="POST" action="{% url 'comment_post' post.id %}" class="comment-input">
                 {% csrf_token %}
-                <input type="text" name="text" placeholder="Add a comment...">
-                <button type="submit" class="btn">💬 Comment</button>
+                <input type="text" name="text" placeholder="Post your reply" required>
+                <button type="submit" class="btn">Reply</button>
             </form>
+            
             {% for comment in post.comments.all %}
-                <p style="margin-top: 8px;"><b>{{ comment.user.username }}:</b> {{ comment.text }}</p>
+            <div class="comment">
+                <span class="comment-user">@{{ comment.user.username }}</span>
+                <span class="post-time"> · {{ comment.created_at|timesince }} ago</span>
+                <div>{{ comment.text }}</div>
+            </div>
             {% endfor %}
         </div>
+    </div>
+    {% empty %}
+    <div class="post" style="text-align: center; color: #a78bfa; padding: 40px;">
+        No posts yet. Be the first to share!
     </div>
     {% endfor %}
 </div>
@@ -65,21 +85,25 @@
 function likePost(id) {
     fetch(`/like/${id}/`).then(r => r.json()).then(data => {
         document.getElementById(`likes-${id}`).innerText = data.total_likes;
+        location.reload();
     });
 }
+
 function savePost(id) {
     fetch(`/save/${id}/`).then(r => r.json()).then(data => {
         document.getElementById(`saves-${id}`).innerText = data.total_saves;
+        location.reload();
     });
 }
+
 function sharePost(id) {
     navigator.clipboard.writeText(window.location.origin + '/#post-' + id);
     alert('Link copied! Share it anywhere 💙');
 }
-</script>
 
-<!-- Ananthi Footer -->
-<div style="text-align: center; padding: 30px; opacity: 0.6;">
-    🚀 This version created by Ananthi 💙
-</div>
+function toggleComment(id) {
+    let box = document.getElementById(`comment-box-${id}`);
+    box.style.display = box.style.display === 'none' ? 'block' : 'none';
+}
+</script>
 {% endblock %}

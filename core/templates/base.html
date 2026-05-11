@@ -1,20 +1,142 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Postify Hub - Ananthi</title>
+    <title>Postify - Ananthi</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui; }
-        nav { padding: 15px; background: rgba(0,0,0,0.3); display: flex; justify-content: space-between; }
-        a { color: #a78bfa; text-decoration: none; margin: 0 10px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        body { 
+            background: #1a1025; 
+            color: #f3e8ff; 
+            min-height: 100vh; 
+        }
+        
+        /* Top Nav - Purple */
+        nav { 
+            padding: 12px 5%; 
+            background: #2e1065; 
+            border-bottom: 1px solid #4c1d95; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo { font-size: 22px; font-weight: 700; color: #c4b5fd; }
+        nav a { color: #a78bfa; text-decoration: none; margin: 0 10px; font-weight: 500; }
+        nav a:hover { color: #c4b5fd; }
+        
+        /* Container */
+        .container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            border-left: 1px solid #4c1d95; 
+            border-right: 1px solid #4c1d95; 
+            min-height: 100vh; 
+            background: #1a1025;
+        }
+        
+        /* Card */
+        .card { 
+            background: #2e1065; 
+            padding: 20px; 
+            margin: 0 auto;
+            max-width: 400px;
+            border: 1px solid #4c1d95;
+            border-radius: 16px;
+        }
+        
+        /* Forms */
+        input, textarea { 
+            width: 100%; 
+            padding: 12px; 
+            border-radius: 4px; 
+            border: 1px solid #4c1d95; 
+            background: #1a1025; 
+            color: #f3e8ff; 
+            margin: 8px 0;
+            font-size: 15px;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #a78bfa;
+        }
+        .btn { 
+            padding: 10px 20px; 
+            border-radius: 20px; 
+            border: none; 
+            cursor: pointer; 
+            background: #7c3aed; 
+            color: white; 
+            font-weight: 700; 
+            width: 100%;
+            margin-top: 15px;
+            font-size: 15px;
+        }
+        .btn:hover { background: #6d28d9; }
+        label { display: block; margin-top: 10px; font-size: 14px; color: #c4b5fd; }
+        .errorlist { color: #f87171; list-style: none; padding: 0; font-size: 13px; }
+        
+        /* Post */
+        .post { 
+            padding: 16px; 
+            border-bottom: 1px solid #4c1d95; 
+        }
+        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .post-user { font-weight: 700; font-size: 15px; color: #c4b5fd; }
+        .post-time { color: #a78bfa; font-size: 14px; opacity: 0.7; }
+        .post-content { font-size: 15px; line-height: 1.5; margin: 8px 0; }
+        .post-image { width: 100%; border-radius: 16px; margin: 10px 0; border: 1px solid #4c1d95; }
+        
+        /* Action Buttons */
+        .post-actions { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-top: 12px;
+            max-width: 425px;
+        }
+        .action-btn { 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            background: none; 
+            border: none; 
+            color: #a78bfa; 
+            cursor: pointer; 
+            font-size: 13px;
+            padding: 8px;
+            border-radius: 20px;
+        }
+        .action-btn:hover { background: rgba(167, 139, 250, 0.1); color: #c4b5fd; }
+        .action-btn.liked { color: #f472b6; }
+        .action-btn.saved { color: #34d399; }
+        
+        /* Comments */
+        .comment-box { 
+            margin-top: 12px; 
+            padding-top: 12px; 
+            border-top: 1px solid #4c1d95; 
+        }
+        .comment-input { display: flex; gap: 10px; }
+        .comment-input input { flex: 1; margin: 0; }
+        .comment-input button { 
+            width: auto; 
+            padding: 8px 16px; 
+            margin: 0; 
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        .comment { margin: 10px 0; font-size: 14px; }
+        .comment-user { font-weight: 700; color: #c4b5fd; }
     </style>
 </head>
-<body class="theme-{{ request.user.profile.theme|default:'dark' }}">
+<body>
     <nav>
-        <h2>Postify Hub</h2>
+        <div class="logo">Postify</div>
         <div>
             {% if user.is_authenticated %}
-                <span>Hi {{ user.username }}</span>
+                <span style="color: #c4b5fd;">@{{ user.username }}</span>
                 <a href="{% url 'logout' %}">Logout</a>
             {% else %}
                 <a href="{% url 'login' %}">Login</a>
@@ -22,6 +144,12 @@
             {% endif %}
         </div>
     </nav>
+
     {% block content %}{% endblock %}
+    
+    <!-- Ananthi Footer -->
+    <div style="text-align: center; padding: 40px 20px; color: #a78bfa; font-size: 13px;">
+        🚀 This version created by Ananthi 💙
+    </div>
 </body>
 </html>
