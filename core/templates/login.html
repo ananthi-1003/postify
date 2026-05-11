@@ -1,24 +1,26 @@
 {% extends 'base.html' %}
 {% block content %}
-<div style="max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-    <h2>Login</h2>
+<div class="glass" style="max-width: 450px; margin: 80px auto; padding: 40px;">
+    <h2 style="text-align: center; margin-bottom: 30px; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">Welcome Back</h2>
     
     {% if form.errors %}
-        <p style="color: red; background: #ffe6e6; padding: 10px; border-radius: 5px;">Your username or password is incorrect. Please try again.</p>
+        <div style="background: rgba(255, 0, 0, 0.2); color: white; padding: 12px; border-radius: 12px; margin-bottom: 20px; text-align: center;">
+            Invalid username or password.
+        </div>
     {% endif %}
 
     <form method="POST" action="{% url 'login' %}">
         {% csrf_token %}
         
-        <label>Username:</label><br>
-        <input type="text" name="username" required style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px;"><br>
+        <label style="color: white; font-weight: 500;">Username</label><br>
+        <input type="text" name="username" required style="margin-bottom: 20px;"><br>
         
-        <label>Password:</label><br>
-        <input type="password" name="password" required style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px;"><br>
+        <label style="color: white; font-weight: 500;">Password</label><br>
+        <input type="password" name="password" required style="margin-bottom: 25px;"><br>
         
-        <button type="submit" style="width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">Login</button>
+        <button type="submit" class="btn btn-primary" style="width: 100%; background: white; color: #667eea;">Login</button>
     </form>
     <br>
-    <p style="text-align: center;">Don't have an account? <a href="{% url 'signup' %}">Sign up</a></p>
+    <p style="text-align: center; color: white;">Don't have an account? <a href="{% url 'signup' %}" style="color: white; font-weight: 600;">Sign up</a></p>
 </div>
 {% endblock %}

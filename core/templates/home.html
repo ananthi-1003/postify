@@ -1,29 +1,43 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>Postify Feed</h1>
 
-<div class="create-post">
+<!-- Create Post Card -->
+<div class="glass post-card">
+    <h3 style="margin-bottom: 15px; color: #1a202c;">Create Post</h3>
     <form method="POST" action="{% url 'create-post' %}">
         {% csrf_token %}
-        <textarea name="content" placeholder="What's on your mind?" rows="3" required style="width: 100%;"></textarea>
+        <textarea name="content" placeholder="What's on your mind, {{ user.username }}?" required></textarea>
         <br><br>
-        <button type="submit">Post</button>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Post</button>
     </form>
 </div>
-<hr>
 
+<!-- Feed Posts -->
 {% for post in posts %}
-    <div class="post">
-        <b>{{ post.user.username }}</b> - {{ post.created_at|date:"d M Y H:i" }}
-        <p>{{ post.text }}</p>
+    <div class="glass post-card">
+        <div class="post-header">
+            <div class="avatar">{{ post.user.username|first|upper }}</div>
+            <div>
+                <div class="post-user">{{ post.user.username }}</div>
+                <div class="post-time">{{ post.created_at|date:"d M Y, H:i" }}</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            {{ post.text }}
+        </div>
+
         {% if post.image %}
-            <img src="{{ post.image.url }}" width="300">
+            <img src="{{ post.image.url }}" style="width: 100%; border-radius: 12px; margin-bottom: 15px;">
         {% endif %}
-        <br>
-        <a href="#">❤️ Like</a>
+        
+        <button class="like-btn">♡ Like</button>
     </div>
-    <hr>
 {% empty %}
-    <p>No posts yet. Create one!</p>
+    <div class="glass post-card" style="text-align: center;">
+        <h3>No posts yet</h3>
+        <p style="color: #4a5568;">Be the first to share something!</p>
+    </div>
 {% endfor %}
+
 {% endblock %}
