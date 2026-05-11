@@ -1,126 +1,70 @@
+<{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Postify</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <title>Postify Hub</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Poppins', sans-serif;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            background-attachment: fixed;
-            padding: 20px;
-            color: #2d3748;
-        }
-        .glass {
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
         }
         .navbar {
-            max-width: 1200px;
-            margin: 0 auto 30px auto;
+            background-color: #1a1a1a;
             padding: 15px 30px;
+            color: white;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .navbar .logo {
-            font-size: 28px;
-            font-weight: 700;
+        .navbar a {
             color: white;
             text-decoration: none;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            margin: 0 15px;
+            font-weight: bold;
         }
-        .navbar .nav-links a, .navbar .nav-links button {
-            margin-left: 20px;
-            text-decoration: none;
-            color: white;
-            font-weight: 500;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            font-family: 'Poppins', sans-serif;
-            transition: 0.3s;
+        .navbar a:hover {
+            color: #00bfff;
         }
-        .navbar .nav-links a:hover, .navbar .nav-links button:hover {
-            text-shadow: 0 0 10px rgba(255,255,255,0.8);
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            min-height: 60vh;
         }
-        .container { max-width: 700px; margin: 0 auto; }
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-            font-family: 'Poppins', sans-serif;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-        input[type="text"], input[type="password"], textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.9);
-            font-family: 'Poppins', sans-serif;
-            font-size: 15px;
-        }
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-        }
-        textarea { resize: vertical; min-height: 100px; }
-        .post-card { padding: 25px; margin-bottom: 20px; }
-        .post-header { display: flex; align-items: center; margin-bottom: 15px; }
-        .avatar {
-            width: 45px; height: 45px; border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: 600; margin-right: 12px;
-        }
-        .post-user { font-weight: 600; color: #1a202c; }
-        .post-time { font-size: 13px; color: #4a5568; }
-        .post-content { color: #2d3748; line-height: 1.6; margin-bottom: 15px; }
     </style>
 </head>
 <body>
-    {% if user.is_authenticated %}
-    <nav class="navbar glass">
-        <a href="{% url 'feed' %}" class="logo">Postify</a>
-        <div class="nav-links">
-            <a href="{% url 'feed' %}">Home</a>
-            <a href="{% url 'profile' %}">Profile</a>
-            <a href="{% url 'friends' %}">Friends</a>
-            <form method="POST" action="{% url 'logout' %}" style="display: inline;">
-                {% csrf_token %}
-                <button type="submit">Logout</button>
-            </form>
+    <div class="navbar">
+        <div>
+            <a href="/">Postify Hub</a>
         </div>
-    </nav>
-    {% endif %}
+        <div>
+            {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}">Profile</a>
+                <a href="{% url 'logout' %}">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'signup' %}">Signup</a>
+            {% endif %}
+        </div>
+    </div>
 
     <div class="container">
         {% block content %}
         {% endblock %}
     </div>
+
+    <!-- Footer Start -->
+    <footer style="text-align: center; padding: 20px; margin-top: 50px; background-color: #111; color: #fff; font-size: 15px;">
+        <p style="margin: 0;">🚀 This version created by <strong>Ananthi</strong> 💙 | © 2026 Postify Hub</p>
+    </footer>
+    <!-- Footer End -->
+
 </body>
 </html>
