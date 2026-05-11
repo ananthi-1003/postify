@@ -31,7 +31,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'postify.urls' # Un project peru 'postify' na apdiye vudu
+ROOT_URLCONF = 'postify_app.urls' # Un project peru 'postify' na apdiye vudu
 
 TEMPLATES = [
     {
@@ -49,7 +49,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'postify.wsgi.application' # Un project peru 'postify' na apdiye vudu
+WSGI_APPLICATION = 'postify_app.wsgi.application' # Un project peru 'postify' na apdiye vudu
 
 # Database - Postgres for Render, SQLite for local
 DATABASES = {
