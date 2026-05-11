@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils import timezone
+from django.utils import timezone  # IDHU MUKKIYAM DA
 
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -12,10 +12,10 @@ class Post(models.Model):
 
     def __str__(self):
         return f'{self.user.username}: {self.content[:30]}'
-    
+
     def total_likes(self):
         return self.likes.count()
-    
+
     def total_saves(self):
         return self.saves.count()
 
@@ -34,7 +34,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.TextField(max_length=500, blank=True)
     profile_pic = models.ImageField(upload_to='profile_pics/', default='default.jpg')
-    theme = models.CharField(max_length=20, default='dark', choices=[('dark', 'Dark'), ('light', 'Light'), ('purple', 'Purple')])
+    theme = models.CharField(max_length=20, default='purple', choices=[('purple', 'Purple')])  # Purple mattum
 
     def __str__(self):
         return f'{self.user.username} Profile'
