@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Postify Feed</h1>
+{% for post in posts %}
+    <div class="post">
+        <b>{{ post.user.username }}</b> - {{ post.created_at|date:"d M Y H:i" }}
+        <p>{{ post.text }}</p>
+        {% if post.image %}
+            <img src="{{ post.image.url }}">
+        {% endif %}
+        <br>
+        <a href="/like/{{ post.id }}/">❤️ Like</a> {{ post.like_set.count }}
+    </div>
+{% empty %}
+    <p>No posts yet. Create one!</p>
+{% endfor %}
+{% endblock %}

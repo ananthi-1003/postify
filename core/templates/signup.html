@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="form-container">
+    <h2 class="text-center mb-4">Join Postify</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary mt-3">Create Account</button>
+    </form>
+    <p class="text-center mt-3">
+        Already a user? <a href="{% url 'login' %}">Login</a>
+    </p>
+</div>
+{% endblock %}
