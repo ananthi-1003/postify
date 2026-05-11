@@ -1,23 +1,49 @@
-{% extends 'base.html' %}
-{% block content %}
-<div class="glass post-card" style="text-align: center;">
-    <div class="avatar" style="width: 80px; height: 80px; margin: 0 auto 15px auto; font-size: 32px;">
-        {{ user.username|first|upper }}
-    </div>
-    <h2>{{ user.username }}</h2>
-    <p style="color: #4a5568;">{{ posts.count }} Posts</p>
-</div>
+{<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Postify</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .glass { backdrop-filter: blur(16px); background: rgba(17, 25, 40, 0.75); }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <nav class="glass sticky top-0 z-40 border-b border-gray-700">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="/" class="text-2xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">Postify</a>
+            <a href="/" class="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 transition">Home</a>
+        </div>
+    </nav>
 
-<h3 style="color: white; margin: 30px 0 20px 0; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">Your Posts</h3>
+    <main class="max-w-2xl mx-auto px-4 py-8">
+        <div class="glass rounded-2xl p-6 mb-6 border border-gray-700 text-center">
+            <img src="{{ user.profile.profile_pic.url }}" class="w-32 h-32 rounded-full mx-auto mb-4 object-cover border-4 border-purple-500">
+            <h1 class="text-3xl font-bold mb-2">{{ user.username }}</h1>
+            
+            <form method="POST" enctype="multipart/form-data" class="mt-4">
+                {% csrf_token %}
+                <label class="block mb-2 text-sm text-gray-400">Update Profile Picture</label>
+                {{ p_form.profile_pic }}
+                <button type="submit" class="mt-3 px-6 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 transition">Update</button>
+            </form>
+        </div>
 
-{% for post in posts %}
-    <div class="glass post-card">
-        <div class="post-time">{{ post.created_at|date:"d M Y, H:i" }}</div>
-        <div class="post-content">{{ post.text }}</div>
-    </div>
-{% empty %}
-    <div class="glass post-card" style="text-align: center;">
-        <p>You haven't posted anything yet.</p>
-    </div>
-{% endfor %}
-{% endblock %}
+        <h2 class="text-2xl font-bold mb-4">My Posts</h2>
+        {% for post in user_posts %}
+        <div class="glass rounded-2xl p-6 mb-4 border border-gray-700">
+            <p class="mb-2">{{ post.content }}</p>
+            <div class="flex justify-between items-center text-sm text-gray-400">
+                <span>{{ post.created_at|date:"M d, Y H:i" }}</span>
+                <span>❤️ {{ post.like_set.count }} | 💬 {{ post.comment_set.count }}</span>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-gray-400">You haven't posted anything yet.</p>
+        {% endfor %}
+    </main>
+</body>
+</html>
