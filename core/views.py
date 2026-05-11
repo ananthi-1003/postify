@@ -1,84 +1,83 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
 from django.contrib import messages
-from .models import Post, Like, Comment, Profile
-from .forms import CommentForm, ProfileUpdateForm
-
-@login_required
-def home(request):
-    if request.method == 'POST' and 'content' in request.POST:
-        content = request.POST.get('content')
-        if content:
-            Post.objects.create(author=request.user, content=content)
-            messages.success(request, 'Post created successfully!')
-            return redirect('home')
-    
-    posts = Post.objects.all().order_by('-created_at')
-    comment_form = CommentForm()
-    
-    for post in posts:
-        post.is_liked = Like.objects.filter(user=request.user, post=post).exists()
-        post.comments = Comment.objects.filter(post=post).order_by('created_at')
-    
-    return render(request, 'home.html', {'posts': posts, 'comment_form': comment_form})
+from django.http import JsonResponse
+from .models import Post, Comment, Repost, Profile
+from .forms import PostForm
 
 def signup(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            Profile.objects.create(user=user)
+            Profile.objects.create(user=user) # ← 500 Error fix
             login(request, user)
-            messages.success(request, 'Account created! Welcome to Postify')
+            messages.success(request, 'Account created! Welcome Ananthi 💙')
             return redirect('home')
     else:
         form = UserCreationForm()
-    return render(request, 'registration/signup.html', {'form': form})
+    return render(request, 'signup.html', {'form': form})
 
 @login_required
-def delete_post(request, post_id):
-    post = get_object_or_404(Post, id=post_id)
-    if post.author == request.user:
-        post.delete()
-        messages.success(request, 'Post deleted successfully!')
-    return redirect('home')
-
-@login_required
-def like_post(request, post_id):
-    post = get_object_or_404(Post, id=post_id)
-    like, created = Like.objects.get_or_create(user=request.user, post=post)
-    if not created:
-        like.delete()
-    return redirect('home')
-
-@login_required
-def add_comment(request, post_id):
-    post = get_object_or_404(Post, id=post_id)
+def home(request):
+    posts = Post.objects.all().order_by('-created_at')
     if request.method == 'POST':
-        form = CommentForm(request.POST)
+        form = PostForm(request.POST, request.FILES)
         if form.is_valid():
-            comment = form.save(commit=False)
-            comment.user = request.user
-            comment.post = post
-            comment.save()
-            messages.success(request, 'Comment added!')
+            post = form.save(commit=False)
+            post.user = request.user
+            post.save()
+            messages.success(request, 'Post created!')
+            return redirect('home')
+    else:
+        form = PostForm()
+    return render(request, 'home.html', {'posts': posts, 'form': form})
+
+@login_required
+def like_post(request, pk):
+    post = get_object_or_404(Post, id=pk)
+    if request.user in post.likes.all():
+        post.likes.remove(request.user)
+        liked = False
+    else:
+        post.likes.add(request.user)
+        liked = True
+    return JsonResponse({'liked': liked, 'total_likes': post.total_likes()})
+
+@login_required
+def save_post(request, pk):
+    post = get_object_or_404(Post, id=pk)
+    if request.user in post.saves.all():
+        post.saves.remove(request.user)
+        saved = False
+    else:
+        post.saves.add(request.user)
+        saved = True
+    return JsonResponse({'saved': saved, 'total_saves': post.total_saves()})
+
+@login_required
+def comment_post(request, pk):
+    post = get_object_or_404(Post, id=pk)
+    if request.method == 'POST':
+        text = request.POST.get('text')
+        if text:
+            Comment.objects.create(post=post, user=request.user, text=text)
     return redirect('home')
 
 @login_required
-def profile(request):
-    if request.method == 'POST':
-        p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
-        if p_form.is_valid():
-            p_form.save()
-            messages.success(request, 'Profile updated!')
-            return redirect('profile')
-    else:
-        p_form = ProfileUpdateForm(instance=request.user.profile)
-    
-    user_posts = Post.objects.filter(author=request.user).order_by('-created_at')
-    return render(request, 'profile.html', {'p_form': p_form, 'user_posts': user_posts})
+def repost(request, pk):
+    original = get_object_or_404(Post, id=pk)
+    Repost.objects.create(original_post=original, user=request.user)
+    messages.success(request, 'Reposted!')
+    return redirect('home')
 
-def custom_404(request, exception):
-    return render(request, '404.html', status=404)
+@login_required
+def change_theme(request):
+    if request.method == 'POST':
+        theme = request.POST.get('theme')
+        profile, created = Profile.objects.get_or_create(user=request.user)
+        profile.theme = theme
+        profile.save()
+    return redirect('home')

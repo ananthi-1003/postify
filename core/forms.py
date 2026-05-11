@@ -1,14 +1,10 @@
 from django import forms
-from .models import Comment, Profile
+from .models import Post
 
-class CommentForm(forms.ModelForm):
-    content = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Add a comment...', 'class': 'w-full p-2 rounded-lg bg-gray-700 border-gray-600'}))
-    
+class PostForm(forms.ModelForm):
     class Meta:
-        model = Comment
-        fields = ['content']
-
-class ProfileUpdateForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        fields = ['profile_pic']
+        model = Post
+        fields = ['content', 'image']
+        widgets = {
+            'content': forms.Textarea(attrs={'rows': 3, 'placeholder': "What's on your mind, Ananthi?"})
+        }
