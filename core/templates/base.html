@@ -1,69 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Postify - Social World</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>Postify</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Poppins', sans-serif; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
         }
         .navbar {
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px 50px;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-        }
-        .logo { font-size: 28px; font-weight: 700; color: #667eea; }
-        .nav-links a {
-            text-decoration: none;
-            color: #333;
-            margin: 0 15px;
-            font-weight: 500;
-        }
-        .nav-links a:hover { color: #667eea; }
-        .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
-        .card {
             background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 15px;
             margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
+        .navbar a {
+            margin-right: 15px;
+            text-decoration: none;
+            color: #007bff;
         }
-        .post-card { border-left: 4px solid #667eea; }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo"><i class="fa-solid fa-globe"></i> Postify</div>
-        <div class="nav-links">
-            <a href="/"><i class="fa-solid fa-house"></i> Home</a>
-            <a href="/profile/"><i class="fa-solid fa-user"></i> Profile</a>
-            <a href="/friends/"><i class="fa-solid fa-users"></i> Friends</a>
-            <a href="/logout/"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-        </div>
-    </nav>
-    <div class="container">
-        {% block content %}
-        {% endblock %}
+    {% if user.is_authenticated %}
+    <div class="navbar">
+        <a href="{% url 'feed' %}">Home</a>
+        <a href="{% url 'profile' %}">Profile</a>
+        <a href="{% url 'friends' %}">Friends</a>
+        <form method="POST" action="{% url 'logout' %}" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" style="background: none; border: none; color: #007bff; cursor: pointer;">Logout</button>
+        </form>
+        <span style="float: right;">Hi, {{ user.username }}</span>
     </div>
+    {% endif %}
+
+    {% block content %}
+    {% endblock %}
 </body>
 </html>
