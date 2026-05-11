@@ -11,13 +11,10 @@
 
     <form method="POST" action="{% url 'login' %}">
         {% csrf_token %}
-        
         <label style="color: white; font-weight: 500;">Username</label><br>
         <input type="text" name="username" required style="margin-bottom: 20px;"><br>
-        
         <label style="color: white; font-weight: 500;">Password</label><br>
         <input type="password" name="password" required style="margin-bottom: 25px;"><br>
-        
         <button type="submit" class="btn btn-primary" style="width: 100%; background: white; color: #667eea;">Login</button>
     </form>
     <br>

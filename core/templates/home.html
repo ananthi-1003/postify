@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<!-- Create Post Card -->
 <div class="glass post-card">
     <h3 style="margin-bottom: 15px; color: #1a202c;">Create Post</h3>
     <form method="POST" action="{% url 'create-post' %}">
@@ -12,7 +11,6 @@
     </form>
 </div>
 
-<!-- Feed Posts -->
 {% for post in posts %}
     <div class="glass post-card">
         <div class="post-header">
@@ -22,16 +20,7 @@
                 <div class="post-time">{{ post.created_at|date:"d M Y, H:i" }}</div>
             </div>
         </div>
-        
-        <div class="post-content">
-            {{ post.text }}
-        </div>
-
-        {% if post.image %}
-            <img src="{{ post.image.url }}" style="width: 100%; border-radius: 12px; margin-bottom: 15px;">
-        {% endif %}
-        
-        <button class="like-btn">♡ Like</button>
+        <div class="post-content">{{ post.text }}</div>
     </div>
 {% empty %}
     <div class="glass post-card" style="text-align: center;">

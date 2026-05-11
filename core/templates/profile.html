@@ -1,11 +1,23 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="card">
-    <h1><i class="fa-solid fa-user"></i> My Profile</h1>
-    <hr style="margin: 20px 0;">
-    <h3>Ananthi</h3>
-    <p>CodeAlpha Intern | Django Developer</p>
-    <p><b>Posts:</b> 3 | <b>Friends:</b> 120 | <b>Likes:</b> 450</p>
-    <button class="btn">Edit Profile</button>
+<div class="glass post-card" style="text-align: center;">
+    <div class="avatar" style="width: 80px; height: 80px; margin: 0 auto 15px auto; font-size: 32px;">
+        {{ user.username|first|upper }}
+    </div>
+    <h2>{{ user.username }}</h2>
+    <p style="color: #4a5568;">{{ posts.count }} Posts</p>
 </div>
+
+<h3 style="color: white; margin: 30px 0 20px 0; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">Your Posts</h3>
+
+{% for post in posts %}
+    <div class="glass post-card">
+        <div class="post-time">{{ post.created_at|date:"d M Y, H:i" }}</div>
+        <div class="post-content">{{ post.text }}</div>
+    </div>
+{% empty %}
+    <div class="glass post-card" style="text-align: center;">
+        <p>You haven't posted anything yet.</p>
+    </div>
+{% endfor %}
 {% endblock %}
