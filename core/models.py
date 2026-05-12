@@ -10,12 +10,26 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(User, related_name='liked_posts', blank=True)
     saves = models.ManyToManyField(User, related_name='saved_posts', blank=True)
+    repost_of = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='reposts')  # ← IDHU PUDHUSA ADD PANNU
     
     def __str__(self):
         return f'{self.user.username} - {self.content[:20]}'
     
     def total_likes(self):
         return self.likes.count()
+    
+    def total_reposts(self):  # ← IDHUVUM PUDHUSA
+        return self.reposts.count()
+
+# PUDHU MODEL - COMMENT KU
+class Comment(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f'{self.user.username} - {self.content[:20]}'
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -35,21 +49,3 @@ class Follow(models.Model):
     
     def __str__(self):
         return f'{self.follower} follows {self.following}'
-
-class Comment(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    content = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-    def __str__(self):
-        return f'{self.user.username} - {self.content[:20]}'
-
-@receiver(post_save, sender=User)
-def create_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
-
-@receiver(post_save, sender=User)
-def save_profile(sender, instance, **kwargs):
-    instance.profile.save()

@@ -1,201 +1,259 @@
-{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Postify - Ananthi</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="{% static 'core/style.css' %}">
-    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Postify</title>
     <style>
-        /* DARK PURPLE THEME - DEFAULT */
+        /* DARK THEME - DEFAULT */
         :root {
-            --bg-color: #0f0a1f;
-            --nav-bg: #1a1433;
-            --card-bg: #1e1b3a;
-            --text-color: #e8e3ff;
-            --text-light: #c4b5fd;
+            --bg-color: #0f0f1a;
+            --card-color: #1a1a2e;
+            --border-color: #2d2d44;
+            --text-color: #e4e4e7;
+            --text-light: #a1a1aa;
             --accent: #8b5cf6;
             --accent-hover: #7c3aed;
-            --border-color: #2e2a4f;
-            --btn-text: #ffffff;
+            --input-bg: #0f0f1a;
         }
-
-        /* LIGHT PURPLE THEME */
-        body.light-mode {
+        
+        /* LIGHT THEME */
+        body.light-theme {
             --bg-color: #f5f3ff;
-            --nav-bg: #ede9fe;
-            --card-bg: #ffffff;
-            --text-color: #2e1065;
-            --text-light: #6d28d9;
-            --accent: #8b5cf6;
-            --accent-hover: #7c3aed;
-            --border-color: #ddd6fe;
-            --btn-text: #ffffff;
+            --card-color: #ffffff;
+            --border-color: #e4d8ff;
+            --text-color: #1f1f1f;
+            --text-light: #6b6b6b;
+            --accent: #7c3aed;
+            --accent-hover: #6d28d9;
+            --input-bg: #f5f3ff;
         }
-
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: background-color 0.3s, color 0.3s;
         }
-
+        
         body {
-            background-color: var(--bg-color);
+            background: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            transition: background 0.3s, color 0.3s;
         }
-
-        /* NAVBAR */
-        nav {
+        
+        .navbar {
+            background: var(--card-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background 0.3s;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 40px;
-            background-color: var(--nav-bg);
-            border-bottom: 1px solid var(--border-color);
         }
-        nav .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--accent);
-            text-decoration: none;
-        }
-        nav div {
+        
+        .logo-section {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
         }
-        nav a {
-            color: var(--text-light);
-            text-decoration: none;
-            font-size: 15px;
-        }
-        nav a:hover {
+        
+        .logo {
+            font-size: 22px;
+            font-weight: 600;
             color: var(--accent);
+            text-decoration: none;
         }
-        .btn-logout, .theme-toggle {
+        
+        .theme-toggle {
             background: var(--accent);
-            color: var(--btn-text);
             border: none;
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 18px;
+            color: white;
         }
-        .btn-logout:hover, .theme-toggle:hover {
-            background: var(--accent-hover);
+        
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
         }
-
-        /* CONTAINER */
+        
+        .nav-links a, .nav-links button {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 15px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        
+        .nav-links a:hover, .nav-links button:hover {
+            color: var(--accent);
+        }
+        
         .container {
             max-width: 600px;
-            margin: 30px auto;
+            margin: 50px auto;
             padding: 0 20px;
             flex: 1;
         }
-
-        /* CARDS */
-        .post-box, .post-card {
-            background: var(--card-bg);
+        
+        .login-card, .post-box, .post-card {
+            background: var(--card-color);
             border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
+            border-radius: 12px;
+            padding: 30px;
             margin-bottom: 20px;
+            transition: background 0.3s;
         }
-        textarea, input[type="text"], input[type="password"], input[type="file"], input[type="email"] {
+        
+        h2 {
+            color: var(--accent);
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 22px;
+        }
+        
+        input[type="text"], input[type="password"], textarea, input[type="file"] {
             width: 100%;
-            background: var(--bg-color);
+            background: var(--input-bg);
             border: 1px solid var(--border-color);
             color: var(--text-color);
             padding: 12px;
             border-radius: 8px;
-            margin: 10px 0;
-            font-family: inherit;
+            margin-bottom: 15px;
+            font-size: 14px;
+            transition: background 0.3s;
         }
-        textarea:focus, input:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
+        
         .btn-primary {
             background: var(--accent);
-            color: var(--btn-text);
+            color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 15px;
             width: 100%;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
         }
+        
         .btn-primary:hover {
             background: var(--accent-hover);
         }
-        .post-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
+        
+        .text-center {
+            text-align: center;
+            margin-top: 15px;
+            color: var(--text-light);
+            font-size: 14px;
         }
+        
+        .text-center a {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+        
         .post-header a {
             color: var(--accent);
             text-decoration: none;
             font-weight: 600;
         }
+        
         .post-header small {
             color: var(--text-light);
+            margin-left: 10px;
         }
-
-        /* FOOTER */
+        
+        /* FOOTER - ANANTHI CREDIT */
         .footer {
+            background: var(--card-color);
+            border-top: 1px solid var(--border-color);
+            padding: 20px;
             text-align: center;
-            padding: 40px 20px;
             color: var(--text-light);
-            font-size: 13px;
+            font-size: 14px;
+            margin-top: auto;
+        }
+        
+        .footer strong {
+            color: var(--accent);
         }
     </style>
 </head>
 <body>
-    <nav>
-        <a href="{% url 'home' %}" class="logo">Postify</a>
-        <div>
-            {% if request.user.is_authenticated %}
-                <span style="color: var(--text-light);">@{{ request.user.username }}</span>
-                <a href="{% url 'friends' %}">Friends</a>
-                <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
-                <form action="{% url 'logout' %}" method="POST" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn-logout">Logout</button>
-                </form>
-            {% else %}
-                <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
-                <a href="{% url 'login' %}">Login</a>
-                <a href="{% url 'signup' %}">Signup</a>
-            {% endif %}
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo-section">
+                <a href="{% url 'home' %}" class="logo">Postify</a>
+                <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">🌙</button>
+            </div>
+            <div class="nav-links">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'home' %}">Home</a>
+                    <a href="{% url 'friends' %}">Friends</a>
+                    <a href="{% url 'profile' user.username %}">Profile</a>
+                    <!-- LOGOUT FIX - POST METHOD -->
+                    <form method="POST" action="{% url 'logout' %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit">Logout</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}">Login</a>
+                    <a href="{% url 'signup' %}">Signup</a>
+                {% endif %}
+            </div>
         </div>
     </nav>
 
     <div class="container">
-        {% block content %}{% endblock %}
+        {% block content %}
+        {% endblock %}
     </div>
 
-    <div class="footer">
-        💜 This version created by Ananthi 💜
-    </div>
+    <!-- FOOTER WITH CREDIT -->
+    <footer class="footer">
+        This version created by <strong>Ananthi</strong> 💜 | Postify © 2026
+    </footer>
 
     <script>
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            localStorage.setItem('theme', isLight ? 'light' : 'dark');
-            document.querySelector('.theme-toggle').textContent = isLight ? '☀️' : '🌙';
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme === 'light') {
+            document.body.classList.add('light-theme');
+            document.getElementById('theme-btn').textContent = '☀️';
         }
-        window.onload = function() {
-            if (localStorage.getItem('theme') === 'light') {
-                document.body.classList.add('light-mode');
-                document.querySelector('.theme-toggle').textContent = '☀️';
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+            let theme = 'dark';
+            let icon = '🌙';
+            
+            if (document.body.classList.contains('light-theme')) {
+                theme = 'light';
+                icon = '☀️';
             }
+            
+            document.getElementById('theme-btn').textContent = icon;
+            localStorage.setItem('theme', theme);
         }
     </script>
 </body>

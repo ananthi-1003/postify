@@ -14,17 +14,105 @@
 <div class="posts">
     {% for post in posts %}
     <div class="post-card">
+        {% if post.repost_of %}
+        <div style="color: var(--text-light); font-size: 13px; margin-bottom: 10px;">
+            🔁 @{{ post.user.username }} reposted
+        </div>
+        {% endif %}
+        
         <div class="post-header">
-            <a href="{% url 'profile' post.user.username %}">@{{ post.user.username }}</a>
+            {% if post.repost_of %}
+                <a href="{% url 'profile' post.repost_of.user.username %}">@{{ post.repost_of.user.username }}</a>
+            {% else %}
+                <a href="{% url 'profile' post.user.username %}">@{{ post.user.username }}</a>
+            {% endif %}
             <small>{{ post.created_at|timesince }} ago</small>
         </div>
-        <p style="margin: 10px 0;">{{ post.content }}</p>
-        {% if post.image %}
+        
+        <p style="margin: 10px 0;">
+            {% if post.repost_of %}{{ post.repost_of.content }}{% else %}{{ post.content }}{% endif %}
+        </p>
+        
+        {% if post.repost_of and post.repost_of.image %}
+            <img src="{{ post.repost_of.image.url }}" alt="Post image" style="max-width:100%; border-radius:12px; margin-top:10px;">
+        {% elif post.image %}
             <img src="{{ post.image.url }}" alt="Post image" style="max-width:100%; border-radius:12px; margin-top:10px;">
         {% endif %}
+
+        <div style="display: flex; justify-content: space-around; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-dark);">
+            <button onclick="likePost({{ post.id }})" id="like-btn-{{ post.id }}" style="background:none; border:none; color:{% if user in post.likes.all %}#ef4444{% else %}var(--text-light){% endif %}; cursor:pointer; font-size:15px;">
+                ❤️ <span id="like-count-{{ post.id }}">{{ post.total_likes }}</span>
+            </button>
+            
+            <button onclick="toggleComment({{ post.id }})" style="background:none; border:none; color:var(--text-light); cursor:pointer; font-size:15px;">
+                💬 {{ post.comments.count }}
+            </button>
+            
+            <button onclick="repostPost({{ post.id }})" style="background:none; border:none; color:var(--text-light); cursor:pointer; font-size:15px;">
+                🔁 {{ post.total_reposts }}
+            </button>
+            
+            <button onclick="savePost({{ post.id }})" id="save-btn-{{ post.id }}" style="background:none; border:none; color:{% if user in post.saves.all %}var(--accent){% else %}var(--text-light){% endif %}; cursor:pointer; font-size:15px;">
+                🔖
+            </button>
+            
+            <button onclick="sharePost('{{ request.build_absolute_uri }}')" style="background:none; border:none; color:var(--text-light); cursor:pointer; font-size:15px;">
+                📤
+            </button>
+        </div>
+
+        <div id="comments-{{ post.id }}" style="display:none; margin-top: 15px;">
+            <form method="POST" action="{% url 'add_comment' post.id %}" style="display:flex; gap:10px; margin-bottom:15px;">
+                {% csrf_token %}
+                <input type="text" name="content" placeholder="Write a comment..." style="flex:1; background:var(--bg-dark); border:1px solid var(--border-dark); color:var(--text-dark); padding:10px; border-radius:8px;">
+                <button type="submit" class="btn-primary" style="width:auto; padding:10px 16px;">Post</button>
+            </form>
+            {% for comment in post.comments.all %}
+            <div style="margin-top:10px; padding:10px; background:var(--bg-dark); border-radius:8px;">
+                <strong style="color:var(--accent);">@{{ comment.user.username }}</strong>
+                <span style="font-size:12px; color:var(--text-light); margin-left:10px;">{{ comment.created_at|timesince }} ago</span>
+                <p style="margin:5px 0 0 0;">{{ comment.content }}</p>
+            </div>
+            {% endfor %}
+        </div>
     </div>
     {% empty %}
         <p style="text-align:center; color:var(--text-light);">No posts yet. Be the first to post! 💜</p>
     {% endfor %}
 </div>
+
+<script>
+function likePost(postId) {
+    fetch(`/like/${postId}/`)
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById(`like-count-${postId}`).textContent = data.total_likes;
+            document.getElementById(`like-btn-${postId}`).style.color = data.liked ? '#ef4444' : 'var(--text-light)';
+        });
+}
+
+function savePost(postId) {
+    fetch(`/save/${postId}/`)
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById(`save-btn-${postId}`).style.color = data.saved ? 'var(--accent)' : 'var(--text-light)';
+        });
+}
+
+function repostPost(postId) {
+    if(confirm('Repost this?')) {
+        window.location.href = `/repost/${postId}/`;
+    }
+}
+
+function toggleComment(postId) {
+    const div = document.getElementById(`comments-${postId}`);
+    div.style.display = div.style.display === 'none' ? 'block' : 'none';
+}
+
+function sharePost(url) {
+    navigator.clipboard.writeText(url);
+    alert('Link copied! 📋');
+}
+</script>
 {% endblock %}
