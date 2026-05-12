@@ -1,109 +1,90 @@
-{% extends 'base.html' %}
-{% block content %}
-<div class="container">
-    <!-- Create Post -->
-    <div class="post" style="border-bottom: 1px solid #4c1d95;">
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.content }}
-            <div style="margin-top: 12px;">{{ form.image }}</div>
-            <button type="submit" class="btn" style="width: auto; float: right; margin-top: 12px;">Post</button>
-            <div style="clear: both;"></div>
-        </form>
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Postify - Home</title>
+    <link rel="stylesheet" href="{% static 'core/style.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="navbar">
+        <a href="{% url 'home' %}" class="logo">Postify</a>
+        <div>
+            <a href="{% url 'friends' %}">Friends</a>
+            <a href="{% url 'profile' request.user.username %}">@{{ request.user.username }}</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
     </div>
-
-    <!-- Posts Feed -->
-    {% for post in posts %}
-    <div class="post">
-        <!-- Post Header -->
-        <div class="post-header">
-            <span class="post-user">@{{ post.user.username }}</span>
-            <span class="post-time">· {{ post.created_at|timesince }} ago</span>
-        </div>
-        
-        <!-- Post Content -->
-        <div class="post-content">{{ post.content }}</div>
-        {% if post.image %}
-            <img src="{{ post.image.url }}" class="post-image">
-        {% endif %}
-        
-        <!-- Action Buttons: Comment, Repost, Like, Save, Share -->
-        <div class="post-actions">
-            <!-- 1. Comment -->
-            <button class="action-btn" onclick="toggleComment({{ post.id }})">
-                💬 {{ post.comments.count }}
-            </button>
-            
-            <!-- 2. Repost -->
-            <a href="{% url 'repost' post.id %}" class="action-btn">
-                🔄 {{ post.reposts.count }}
-            </a>
-            
-            <!-- 3. Like -->
-            <button class="action-btn {% if request.user in post.likes.all %}liked{% endif %}" onclick="likePost({{ post.id }})">
-                {% if request.user in post.likes.all %} ❤️ {% else %} 🤍 {% endif %}
-                <span id="likes-{{ post.id }}">{{ post.total_likes }}</span>
-            </button>
-            
-            <!-- 4. Save -->
-            <button class="action-btn {% if request.user in post.saves.all %}saved{% endif %}" onclick="savePost({{ post.id }})">
-                {% if request.user in post.saves.all %} 🔖 {% else %} 📑 {% endif %}
-                <span id="saves-{{ post.id }}">{{ post.total_saves }}</span>
-            </button>
-            
-            <!-- 5. Share -->
-            <button class="action-btn" onclick="sharePost({{ post.id }})">
-                📤
-            </button>
-        </div>
-
-        <!-- Comments Section -->
-        <div class="comment-box" id="comment-box-{{ post.id }}" style="display: none;">
-            <form method="POST" action="{% url 'comment_post' post.id %}" class="comment-input">
+    
+    <div class="container">
+        <div class="post-box">
+            <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
-                <input type="text" name="text" placeholder="Post your reply" required>
-                <button type="submit" class="btn">Reply</button>
+                <textarea name="content" placeholder="What's on your mind?" rows="3"></textarea>
+                <input type="file" name="image" accept="image/*">
+                <button type="submit" class="btn-primary">Post</button>
             </form>
-            
-            {% for comment in post.comments.all %}
-            <div class="comment">
-                <span class="comment-user">@{{ comment.user.username }}</span>
-                <span class="post-time"> · {{ comment.created_at|timesince }} ago</span>
-                <div>{{ comment.text }}</div>
+        </div>
+
+        <div class="posts">
+            {% for post in posts %}
+            <div class="post-card">
+                <div class="post-header">
+                    <a href="{% url 'profile' post.user.username %}">@{{ post.user.username }}</a>
+                    <small>{{ post.created_at|timesince }} ago</small>
+                </div>
+                <p>{{ post.content }}</p>
+                {% if post.image %}
+                    <img src="{{ post.image.url }}" style="max-width:100%; border-radius:8px; margin:10px 0;">
+                {% endif %}
+                
+                <div class="post-actions">
+                    <button class="like-btn" data-id="{{ post.id }}">
+                        {% if request.user in post.likes.all %}❤️{% else %}🤍{% endif %}
+                        <span class="like-count">{{ post.total_likes }}</span>
+                    </button>
+                    
+                    <button class="save-btn" data-id="{{ post.id }}">
+                        {% if request.user in post.saves.all %}🔖{% else %}📑{% endif %}
+                    </button>
+                    
+                    <a href="{% url 'repost' post.id %}">🔁 Repost</a>
+                    <a href="{% url 'share' post.id %}">📤 Share</a>
+                </div>
+
+                <div class="comments">
+                    {% for comment in post.comments.all %}
+                        <p><b>@{{ comment.user.username }}:</b> {{ comment.content }}</p>
+                    {% endfor %}
+                    <form action="{% url 'add_comment' post.id %}" method="POST">
+                        {% csrf_token %}
+                        <input type="text" name="content" placeholder="Add a comment..." required>
+                        <button type="submit">Comment</button>
+                    </form>
+                </div>
             </div>
             {% endfor %}
         </div>
     </div>
-    {% empty %}
-    <div class="post" style="text-align: center; color: #a78bfa; padding: 40px;">
-        No posts yet. Be the first to share!
-    </div>
-    {% endfor %}
-</div>
 
 <script>
-function likePost(id) {
-    fetch(`/like/${id}/`).then(r => r.json()).then(data => {
-        document.getElementById(`likes-${id}`).innerText = data.total_likes;
-        location.reload();
+$('.like-btn').click(function(){
+    var post_id = $(this).data('id');
+    var btn = $(this);
+    $.get('/like/' + post_id + '/', function(data){
+        if(data.liked){ btn.html('❤️ <span class="like-count">' + data.total_likes + '</span>'); }
+        else{ btn.html('🤍 <span class="like-count">' + data.total_likes + '</span>'); }
     });
-}
+});
 
-function savePost(id) {
-    fetch(`/save/${id}/`).then(r => r.json()).then(data => {
-        document.getElementById(`saves-${id}`).innerText = data.total_saves;
-        location.reload();
+$('.save-btn').click(function(){
+    var post_id = $(this).data('id');
+    var btn = $(this);
+    $.get('/save/' + post_id + '/', function(data){
+        if(data.saved){ btn.html('🔖'); }
+        else{ btn.html('📑'); }
     });
-}
-
-function sharePost(id) {
-    navigator.clipboard.writeText(window.location.origin + '/#post-' + id);
-    alert('Link copied! Share it anywhere 💙');
-}
-
-function toggleComment(id) {
-    let box = document.getElementById(`comment-box-${id}`);
-    box.style.display = box.style.display === 'none' ? 'block' : 'none';
-}
+});
 </script>
-{% endblock %}
+</body>
+</html>

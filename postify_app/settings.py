@@ -3,7 +3,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-anathi-postify-hub-2026-super-secret'
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['postify-hub-p5fp.onrender.com', 'localhost', '127.0.0.1']
 
@@ -14,12 +14,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core', # ← Un app name. 'core' nu irundha maathadha
+    'core', 
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # ← CSS fix ku mukkiyam
+    #'whitenoise.middleware.WhiteNoiseMiddleware', 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -28,8 +28,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'postify_app.urls' # ← ModuleNotFoundError fix
-WSGI_APPLICATION = 'postify_app.wsgi.application' # ← ModuleNotFoundError fix
+ROOT_URLCONF = 'postify_app.urls' 
+WSGI_APPLICATION = 'postify_app.wsgi.application' 
 
 TEMPLATES = [
     {
@@ -74,5 +74,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Login redirect
 LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/login/'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'login'

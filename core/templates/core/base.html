@@ -1,0 +1,202 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Postify - Ananthi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'core/style.css' %}">
+    
+    <style>
+        /* DARK PURPLE THEME - DEFAULT */
+        :root {
+            --bg-color: #0f0a1f;
+            --nav-bg: #1a1433;
+            --card-bg: #1e1b3a;
+            --text-color: #e8e3ff;
+            --text-light: #c4b5fd;
+            --accent: #8b5cf6;
+            --accent-hover: #7c3aed;
+            --border-color: #2e2a4f;
+            --btn-text: #ffffff;
+        }
+
+        /* LIGHT PURPLE THEME */
+        body.light-mode {
+            --bg-color: #f5f3ff;
+            --nav-bg: #ede9fe;
+            --card-bg: #ffffff;
+            --text-color: #2e1065;
+            --text-light: #6d28d9;
+            --accent: #8b5cf6;
+            --accent-hover: #7c3aed;
+            --border-color: #ddd6fe;
+            --btn-text: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* NAVBAR */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            background-color: var(--nav-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+        nav .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent);
+            text-decoration: none;
+        }
+        nav div {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 15px;
+        }
+        nav a:hover {
+            color: var(--accent);
+        }
+        .btn-logout, .theme-toggle {
+            background: var(--accent);
+            color: var(--btn-text);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-logout:hover, .theme-toggle:hover {
+            background: var(--accent-hover);
+        }
+
+        /* CONTAINER */
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 0 20px;
+            flex: 1;
+        }
+
+        /* CARDS */
+        .post-box, .post-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        textarea, input[type="text"], input[type="password"], input[type="file"], input[type="email"] {
+            width: 100%;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: inherit;
+        }
+        textarea:focus, input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: var(--btn-text);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            width: 100%;
+        }
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .post-header a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .post-header small {
+            color: var(--text-light);
+        }
+
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'home' %}" class="logo">Postify</a>
+        <div>
+            {% if request.user.is_authenticated %}
+                <span style="color: var(--text-light);">@{{ request.user.username }}</span>
+                <a href="{% url 'friends' %}">Friends</a>
+                <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+                <form action="{% url 'logout' %}" method="POST" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-logout">Logout</button>
+                </form>
+            {% else %}
+                <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'signup' %}">Signup</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <div class="footer">
+        💜 This version created by Ananthi 💜
+    </div>
+
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            document.querySelector('.theme-toggle').textContent = isLight ? '☀️' : '🌙';
+        }
+        window.onload = function() {
+            if (localStorage.getItem('theme') === 'light') {
+                document.body.classList.add('light-mode');
+                document.querySelector('.theme-toggle').textContent = '☀️';
+            }
+        }
+    </script>
+</body>
+</html>

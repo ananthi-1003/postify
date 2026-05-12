@@ -1,40 +1,55 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils import timezone  # IDHU MUKKIYAM DA
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    content = models.TextField(max_length=500)
+    content = models.TextField()
     image = models.ImageField(upload_to='posts/', blank=True, null=True)
-    created_at = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(User, related_name='liked_posts', blank=True)
     saves = models.ManyToManyField(User, related_name='saved_posts', blank=True)
-
+    
     def __str__(self):
-        return f'{self.user.username}: {self.content[:30]}'
-
+        return f'{self.user.username} - {self.content[:20]}'
+    
     def total_likes(self):
         return self.likes.count()
 
-    def total_saves(self):
-        return self.saves.count()
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    bio = models.TextField(max_length=500, blank=True, default="Hey, I'm on Postify!")
+    profile_pic = models.ImageField(upload_to='profile_pics/', default='default.jpg')
+    
+    def __str__(self):
+        return f'{self.user.username} Profile'
+
+class Follow(models.Model):
+    follower = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE)
+    following = models.ForeignKey(User, related_name='followers', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ('follower', 'following')
+    
+    def __str__(self):
+        return f'{self.follower} follows {self.following}'
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    text = models.TextField(max_length=300)
-    created_at = models.DateTimeField(default=timezone.now)
-
-class Repost(models.Model):
-    original_post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='reposts')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(default=timezone.now)
-
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    bio = models.TextField(max_length=500, blank=True)
-    profile_pic = models.ImageField(upload_to='profile_pics/', default='default.jpg')
-    theme = models.CharField(max_length=20, default='purple', choices=[('purple', 'Purple')])  # Purple mattum
-
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
     def __str__(self):
-        return f'{self.user.username} Profile'
+        return f'{self.user.username} - {self.content[:20]}'
+
+@receiver(post_save, sender=User)
+def create_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_profile(sender, instance, **kwargs):
+    instance.profile.save()

@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Friends - Postify</title>
+    <link rel="stylesheet" href="{% static 'core/style.css' %}">
+</head>
+<body>
+    <div class="navbar">
+        <a href="{% url 'home' %}" class="logo">Postify</a>
+        <div>
+            <a href="{% url 'friends' %}">Friends</a>
+            <a href="{% url 'profile' request.user.username %}">@{{ request.user.username }}</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h2>Following</h2>
+        {% for user in following %}
+            <div class="user-card">
+                <a href="{% url 'profile' user.username %}">@{{ user.username }}</a>
+            </div>
+        {% empty %}
+            <p>You're not following anyone yet.</p>
+        {% endfor %}
+
+        <h2 style="margin-top:30px;">Followers</h2>
+        {% for user in followers %}
+            <div class="user-card">
+                <a href="{% url 'profile' user.username %}">@{{ user.username }}</a>
+            </div>
+        {% empty %}
+            <p>No followers yet.</p>
+        {% endfor %}
+    </div>
+</body>
+</html>

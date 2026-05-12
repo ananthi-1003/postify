@@ -1,0 +1,131 @@
+/* Postify Dark Purple Theme 💜 */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: #0f0514;
+    color: #e8dff5;
+    font-family: 'Poppins', sans-serif;
+}
+
+.navbar {
+    background: linear-gradient(135deg, #4a1d6e 0%, #7b2cbf 50%, #9d4edd 100%);
+    padding: 15px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 20px rgba(157, 78, 221, 0.3);
+}
+
+.navbar .logo {
+    color: #fff;
+    font-size: 24px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.navbar a, .navbar button {
+    color: #e8dff5;
+    text-decoration: none;
+    margin-left: 20px;
+    font-weight: 500;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.navbar a:hover, .navbar button:hover {
+    color: #c77dff;
+}
+
+.container {
+    max-width: 700px;
+    margin: 30px auto;
+    padding: 0 15px;
+}
+
+.post-box, .post-card, .user-card, .profile-header, .login-box {
+    background: #1a0f23;
+    border: 1px solid #4a1d6e;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+textarea, input[type="text"], input[type="password"], input[type="email"] {
+    width: 100%;
+    background: #0f0514;
+    border: 1px solid #4a1d6e;
+    border-radius: 8px;
+    padding: 12px;
+    color: #e8dff5;
+    font-family: 'Poppins';
+    margin-bottom: 10px;
+}
+
+textarea:focus, input:focus {
+    outline: none;
+    border-color: #9d4edd;
+    box-shadow: 0 0 8px rgba(157, 78, 221, 0.5);
+}
+
+.btn-primary, button {
+    background: linear-gradient(135deg, #7b2cbf 0%, #9d4edd 100%);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-family: 'Poppins';
+}
+
+.btn-primary:hover, button:hover {
+    background: linear-gradient(135deg, #9d4edd 0%, #c77dff 100%);
+    transform: translateY(-2px);
+}
+
+.post-actions {
+    display: flex;
+    gap: 20px;
+    margin: 15px 0;
+}
+
+.post-actions button, .post-actions a {
+    background: none;
+    border: none;
+    color: #c77dff;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.post-actions button:hover, .post-actions a:hover {
+    color: #fff;
+}
+
+.post-header a {
+    color: #c77dff;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.post-header small {
+    color: #9d4edd;
+}
+
+h2, h3 {
+    color: #c77dff;
+    margin-bottom: 15px;
+}
+
+a {
+    color: #9d4edd;
+}
+
+a:hover {
+    color: #c77dff;
+}

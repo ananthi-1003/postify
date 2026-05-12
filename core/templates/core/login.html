@@ -1,0 +1,25 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="post-card" style="max-width: 400px; margin: 60px auto;">
+    <h2 style="text-align: center; color: var(--accent); margin-bottom: 20px;">Login to Postify</h2>
+    
+    {% if form.errors %}
+        <p style="color: #ef4444; text-align: center; margin-bottom: 15px;">
+            Username or password wrong da 😅
+        </p>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit" class="btn-primary">Login</button>
+    </form>
+    
+    <p style="text-align: center; margin-top: 15px; color: var(--text-light);">
+        New user? <a href="{% url 'signup' %}" style="color: var(--accent);">Create Account</a>
+    </p>
+</div>
+{% endblock %}
